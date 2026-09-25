@@ -291,6 +291,7 @@ a.tel{white-space:nowrap}
   .dish{grid-template-columns:minmax(0,1fr)}
   .heat{justify-self:start;margin-top:.35rem}
 }
+.card__place .seg{display:inline-block;max-width:100%}
 @media print{
   :root:not(#x),:root[data-theme]:not(#x){--bg:#fff;--card:#fff;--card-2:#fff;--ink:#111;--ink-2:#333;--ink-3:#666;--shadow:none;color-scheme:light}
   .toc,.howto,.updater,.previewbar{display:none}
@@ -489,7 +490,9 @@ a.tel{white-space:nowrap}
         h.push('<li class="slot' + (moveLike ? ' slot--move' : '') + '">');
         h.push('<div class="slot__time"><b>' + esc(s.start) + '</b>' + (has(s.end) ? '<span>' + esc(s.end) + '</span>' : '') + '</div>');
         h.push('<article class="card"><div class="card__top">' + (has(s.kind) ? '<span class="pill kind kind--' + k + '">' + esc(s.kind) + '</span>' : '') + '</div>');
-        h.push('<h3 class="card__place">' + esc(s.place) + '</h3>');
+        h.push('<h3 class="card__place">' + String(s.place || '').split(' → ').map(function (seg) {
+          return '<span class="seg">' + esc(seg) + '</span>';
+        }).join(' → ') + '</h3>');
         if (!has(s.place_ko) && has(s.link)) h.push('<p class="card__ko">' + siteLink(s.link) + '</p>');
         if (has(s.place_ko)) h.push('<p class="card__ko">' + kos(s.place_ko, s.place_ko_yomi) + (moveLike ? '' : mapLink(d, s.place_ko)) + siteLink(s.link) + '</p>');
         if (has(s.what)) h.push('<p class="card__what">' + txt(s.what) + '</p>');
