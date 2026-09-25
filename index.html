@@ -253,6 +253,38 @@ label.btn{display:inline-block}
   .day__badge b{font-size:1.75rem}
 }
 
+/* ---------- 小さい画面の読みやすさ ---------- */
+.page{overflow-wrap:break-word}
+h1,h2,h3,.card__place,.day__title,.ticket__label,.vcase__case,.sec__title,.dish__name,.phrase__ja,.memo-group h3,.cover__stay{word-break:auto-phrase}
+.yomi,.taxi__yomi,.phrase__read,.rd{word-break:keep-all;overflow-wrap:break-word}
+.rd{font-size:.9em;color:var(--ink-2)}
+a.tel{white-space:nowrap}
+@media (max-width: 36rem){
+  .tl::before{display:none}
+  .slot{grid-template-columns:minmax(0,1fr);row-gap:.35rem;margin-bottom:1rem}
+  .slot__time{display:flex;align-items:baseline;gap:.2rem;margin:0 0 0 .35rem;padding:0;background:none;text-align:left}
+  .slot__time b{font-size:1.15rem}
+  .slot__time span{display:inline;margin:0;font-size:1rem;color:var(--ink-3)}
+  .slot__time span::before{content:"〜";margin-right:.2rem}
+  .card{padding:.9rem 1rem 1rem}
+  .card__place{font-size:1.2rem}
+  .ko{font-size:1.15rem}
+  .day__head{grid-template-columns:auto minmax(0,1fr);padding:1rem 1rem 1.1rem}
+  .day__badge{grid-row:auto;width:3.4rem;height:3.4rem}
+  .day__badge b{font-size:1.5rem}
+  .day__badge span{font-size:.75rem}
+  .day__title{grid-column:1/-1;margin-top:.5rem;font-size:1.3rem}
+  .vcase{border-left-width:7px;padding:.85rem .95rem .95rem}
+  .kv dd,.dl dd,.bullets li,.dish__where,.dish__note{line-height:1.8}
+}
+@media (max-width: 22.5rem){
+  .wrap{padding:0 .6rem}
+  .card{padding:.8rem .85rem .9rem}
+  .ko{font-size:1.1rem}
+  .cover__title{font-size:2.05rem}
+  .ticket__date{font-size:1.5rem;min-width:3.8rem}
+}
+
 @media print{
   :root:not(#x),:root[data-theme]:not(#x){--bg:#fff;--card:#fff;--card-2:#fff;--ink:#111;--ink-2:#333;--ink-3:#666;--shadow:none;color-scheme:light}
   .toc,.howto,.updater,.previewbar{display:none}
@@ -316,16 +348,20 @@ label.btn{display:inline-block}
   var LINK_RE = /(https?:\/\/[A-Za-z0-9.\/?=_%:#~+\-&;]+)|((?:[a-z0-9][a-z0-9-]*\.)+(?:go\.kr|co\.kr|or\.kr|ne\.kr|go\.jp|co\.jp|or\.jp|ne\.jp|com|net|org|kr|jp)(?:\/[A-Za-z0-9.\/?=_%:#~+\-&;]*)?)|(\+8[12][0-9\- ]{7,})/g;
   function txt(s) {
     var html = esc(s).replace(/\n/g, '<br>');
+    // 読み仮名の（カタカナ）は、語の途中で折り返さないようにまとめる
+    html = html.replace(/（[ァ-ヴー・ 　]+）/g, function (m) { return '<span class="rd">' + m + '</span>'; });
     return html.replace(LINK_RE, function (m, full, bare, phone) {
       if (phone) {
         var shownPhone = phone.replace(/[\s\-]+$/, '');
         var num = shownPhone.replace(/[^0-9+]/g, '');
-        return '<a href="tel:' + num + '">' + shownPhone + '</a>' + phone.slice(shownPhone.length);
+        return '<a class="tel" href="tel:' + num + '">' + shownPhone + '</a>' + phone.slice(shownPhone.length);
       }
       var raw = full || bare;
       var shown = raw.replace(/[.;,]+$/, '');
       var href = full ? shown : 'https://' + shown;
-      return '<a href="' + href + '" target="_blank" rel="noopener">' + shown + '</a>' + raw.slice(shown.length);
+      // 長いURLは画面を崩すので、見せるのはドメインだけにする
+      var label = shown.replace(/^https?:\/\//, '').replace(/^www\./, '').split(/[\/?#]/)[0];
+      return '<a href="' + href + '" target="_blank" rel="noopener">' + label + '</a>' + raw.slice(shown.length);
     });
   }
   function mapLink(d, koStr) {
@@ -437,7 +473,7 @@ label.btn{display:inline-block}
       h.push('<section class="day wrap ' + dayClass(i) + '" id="d' + (i + 1) + '">');
       h.push('<header class="day__head"><div class="day__badge"><b>' + (i + 1) + '</b><span>日目</span></div>');
       h.push('<p class="day__date">' + esc(day.date) + '</p>');
-      h.push('<h2 class="day__title">' + esc(day.title) + '</h2>');
+      h.push('<h2 class="day__title">' + esc(String(day.title || '').replace(/^\s*\d+日目[\s\u3000]*/, '')) + '</h2>');
       if (has(day.summary)) h.push('<p class="day__summary">' + txt(day.summary) + '</p>');
       if (has(day.steps)) h.push('<span class="pill day__steps">歩数の目安　' + esc(day.steps) + '</span>');
       h.push('</header><ol class="tl">');
