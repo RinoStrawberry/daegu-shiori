@@ -285,6 +285,12 @@ a.tel{white-space:nowrap}
   .ticket__date{font-size:1.5rem;min-width:3.8rem}
 }
 
+.day__steps{white-space:normal;line-height:1.6;border-radius:14px}
+.heat{white-space:normal;line-height:1.5;border-radius:12px}
+@media (max-width: 36rem){
+  .dish{grid-template-columns:minmax(0,1fr)}
+  .heat{justify-self:start;margin-top:.35rem}
+}
 @media print{
   :root:not(#x),:root[data-theme]:not(#x){--bg:#fff;--card:#fff;--card-2:#fff;--ink:#111;--ink-2:#333;--ink-3:#666;--shadow:none;color-scheme:light}
   .toc,.howto,.updater,.previewbar{display:none}
